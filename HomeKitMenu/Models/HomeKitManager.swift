@@ -150,6 +150,7 @@ final class HomeKitManager: NSObject {
 
     var accessories: [HomeAccessory] = []
     var isAuthorized = false
+    var isSyncing = true  // True while waiting for HomeKit to sync
     var authorizationStatus: String = "Checking..."
     var homes: [HMHome] = []
     var selectedHomeIndex: Int = 0 {
@@ -186,6 +187,7 @@ final class HomeKitManager: NSObject {
 
                 // Check for explicit denial first
                 if status.contains(.restricted) {
+                    self.isSyncing = false
                     self.authorizationStatus = "HomeKit access restricted"
                     return
                 }
@@ -200,6 +202,7 @@ final class HomeKitManager: NSObject {
                 if !self.homeManager.homes.isEmpty {
                     self.homes = self.homeManager.homes
                     self.isAuthorized = true
+                    self.isSyncing = false
                     self.authorizationStatus = "Connected to \(self.homes.first?.name ?? "Home")"
                     self.refreshAccessories()
                     return
@@ -210,6 +213,7 @@ final class HomeKitManager: NSObject {
             }
 
             // After 60 seconds, if still no homes
+            self.isSyncing = false
             if !self.isAuthorized {
                 let status = self.homeManager.authorizationStatus
                 if !status.contains(.determined) {
@@ -525,9 +529,11 @@ extension HomeKitManager: HMHomeManagerDelegate {
 
             if status.contains(.restricted) {
                 isAuthorized = false
+                isSyncing = false
                 authorizationStatus = "HomeKit access restricted"
             } else if !status.contains(.determined) {
                 isAuthorized = false
+                isSyncing = false
                 authorizationStatus = "HomeKit access not authorized"
             } else if manager.homes.isEmpty {
                 // HomeKit may call this with empty homes initially while syncing from iCloud
@@ -536,6 +542,7 @@ extension HomeKitManager: HMHomeManagerDelegate {
                 authorizationStatus = "Syncing HomeKit data..."
             } else {
                 isAuthorized = true
+                isSyncing = false
                 authorizationStatus = "Connected to \(manager.homes.first?.name ?? "Home")"
                 refreshAccessories()
             }

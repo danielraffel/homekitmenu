@@ -144,7 +144,16 @@ struct MenuBarContentView: View {
 
     var body: some View {
         Group {
-            if !homeKitManager.isAuthorized {
+            if homeKitManager.isSyncing {
+                // Syncing state - show loading indicator
+                ContentUnavailableView {
+                    Label("Connecting to HomeKit", systemImage: "house.circle")
+                } description: {
+                    Text(homeKitManager.authorizationStatus)
+                    ProgressView()
+                        .padding(.top, 8)
+                }
+            } else if !homeKitManager.isAuthorized {
                 // Not authorized state
                 ContentUnavailableView {
                     Label("No HomeKit Access", systemImage: "house.circle")

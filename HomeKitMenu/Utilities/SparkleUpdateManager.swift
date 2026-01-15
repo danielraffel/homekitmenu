@@ -116,10 +116,10 @@ final class SparkleUpdateManager: NSObject {
     }
 
     private func handleDownloadedFile(at location: URL, version: String) {
-        // Move to Downloads folder so user can access it
-        let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
+        // Use caches directory (always writable in sandbox) instead of Downloads
+        let cachesURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
-        let dmgPath = downloadsURL.appendingPathComponent("HomeKitMenu-\(version).dmg")
+        let dmgPath = cachesURL.appendingPathComponent("HomeKitMenu-\(version).dmg")
 
         do {
             // Remove existing file if present
