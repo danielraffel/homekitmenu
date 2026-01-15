@@ -168,44 +168,49 @@ final class HomeKitManager: NSObject {
     override init() {
         super.init()
         homeManager.delegate = self
+        authorizationStatus = "Connecting to HomeKit..."
 
-        // Check authorization status after a brief delay
+        // Retry checking for HomeKit access over several seconds
+        // The delegate should fire, but this is a backup
         Task { @MainActor in
-            try? await Task.sleep(for: .seconds(1))
-            self.checkAuthorizationStatus()
-        }
-    }
+            for attempt in 1...10 {
+                try? await Task.sleep(for: .seconds(1))
 
-    /// Checks the current HomeKit authorization status
-    @MainActor
-    private func checkAuthorizationStatus() {
-        let status = homeManager.authorizationStatus
+                // If already authorized by delegate, stop checking
+                if self.isAuthorized {
+                    return
+                }
 
-        if status.contains(.restricted) {
-            isAuthorized = false
-            authorizationStatus = "HomeKit access restricted"
-        } else if status.contains(.determined) {
-            // Permission granted - check if we have homes
-            if !homes.isEmpty {
-                // Already have homes, we're good
-                isAuthorized = true
-                authorizationStatus = "Connected to \(homes.first?.name ?? "Home")"
-                refreshAccessories()
-            } else {
-                // Wait for homes to load
-                authorizationStatus = "Waiting for HomeKit..."
-                Task {
-                    try? await Task.sleep(for: .seconds(2))
-                    if self.homes.isEmpty && self.homeManager.authorizationStatus.contains(.determined) {
-                        self.authorizationStatus = "No homes configured in HomeKit"
-                        self.isAuthorized = false
-                    }
+                // Check if we now have access
+                let status = self.homeManager.authorizationStatus
+                if status.contains(.determined) && !self.homeManager.homes.isEmpty {
+                    self.homes = self.homeManager.homes
+                    self.isAuthorized = true
+                    self.authorizationStatus = "Connected to \(self.homes.first?.name ?? "Home")"
+                    self.refreshAccessories()
+                    return
+                }
+
+                // Update status message
+                if status.contains(.restricted) {
+                    self.authorizationStatus = "HomeKit access restricted"
+                    return
+                } else if !status.contains(.determined) {
+                    self.authorizationStatus = "Connecting to HomeKit... (\(attempt)/10)"
+                } else {
+                    self.authorizationStatus = "Waiting for homes... (\(attempt)/10)"
                 }
             }
-        } else {
-            // Not yet determined - waiting for user permission
-            isAuthorized = false
-            authorizationStatus = "Waiting for HomeKit permission..."
+
+            // After all retries, if still not authorized
+            if !self.isAuthorized {
+                let status = self.homeManager.authorizationStatus
+                if !status.contains(.determined) {
+                    self.authorizationStatus = "HomeKit permission not granted"
+                } else {
+                    self.authorizationStatus = "No HomeKit homes found"
+                }
+            }
         }
     }
 
