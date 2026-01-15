@@ -128,6 +128,7 @@ struct MenuBarContentView: View {
     let homeKitManager: HomeKitManager
     @Bindable var preferences: UserPreferences
     @Binding var showingPreferences: Bool
+    @State private var showingSettings = false
 
     private var filteredAccessories: [HomeAccessory] {
         var result = homeKitManager.accessories.filter { preferences.isSelected($0) }
@@ -250,19 +251,17 @@ struct MenuBarContentView: View {
                         }
                     }
 
-                    Section("Display Options") {
-                        Toggle("Group by room in menu", isOn: $preferences.groupByRoom)
-                        Toggle("Sort \"on\" devices first", isOn: $preferences.sortByOnState)
-                        Toggle("Show sensors in menu", isOn: $preferences.showSensorsInMenu)
-                        Toggle("Show scenes in menu", isOn: $preferences.showScenesInMenu)
-                        Toggle("Show Apple Shortcuts in menu", isOn: $preferences.showAppleShortcuts)
-                    }
-
                     Section {
                         Button {
                             homeKitManager.refreshAccessories()
                         } label: {
                             Label("Refresh", systemImage: "arrow.clockwise")
+                        }
+
+                        Button {
+                            showingSettings = true
+                        } label: {
+                            Label("Settings", systemImage: "gear")
                         }
                     }
                 }
@@ -270,6 +269,9 @@ struct MenuBarContentView: View {
         }
         .onAppear {
             homeKitManager.refreshAccessories()
+        }
+        .sheet(isPresented: $showingSettings) {
+            SettingsView(preferences: preferences)
         }
     }
 
