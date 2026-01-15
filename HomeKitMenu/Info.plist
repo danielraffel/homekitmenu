@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.5</string>
+	<string>1.0.7</string>
 	<key>CFBundleVersion</key>
-	<string>10005</string>
+	<string>10007</string>
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSHomeKitUsageDescription</key>

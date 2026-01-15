@@ -170,10 +170,10 @@ final class HomeKitManager: NSObject {
         homeManager.delegate = self
         authorizationStatus = "Connecting to HomeKit..."
 
-        // Retry checking for HomeKit access over several seconds
-        // The delegate should fire, but this is a backup
+        // HomeKit on Mac Catalyst can take a long time to sync from iCloud
+        // Keep checking until we have homes or explicit denial (up to 60 seconds)
         Task { @MainActor in
-            for attempt in 1...10 {
+            for attempt in 1...60 {
                 try? await Task.sleep(for: .seconds(1))
 
                 // If already authorized by delegate, stop checking
@@ -183,7 +183,21 @@ final class HomeKitManager: NSObject {
 
                 // Check if we now have access
                 let status = self.homeManager.authorizationStatus
-                if status.contains(.determined) && !self.homeManager.homes.isEmpty {
+
+                // Check for explicit denial first
+                if status.contains(.restricted) {
+                    self.authorizationStatus = "HomeKit access restricted"
+                    return
+                }
+
+                // If not determined yet, keep waiting (permission dialog may still be showing)
+                if !status.contains(.determined) {
+                    self.authorizationStatus = "Waiting for HomeKit permission..."
+                    continue
+                }
+
+                // Authorization is determined - check for homes
+                if !self.homeManager.homes.isEmpty {
                     self.homes = self.homeManager.homes
                     self.isAuthorized = true
                     self.authorizationStatus = "Connected to \(self.homes.first?.name ?? "Home")"
@@ -191,24 +205,17 @@ final class HomeKitManager: NSObject {
                     return
                 }
 
-                // Update status message
-                if status.contains(.restricted) {
-                    self.authorizationStatus = "HomeKit access restricted"
-                    return
-                } else if !status.contains(.determined) {
-                    self.authorizationStatus = "Connecting to HomeKit... (\(attempt)/10)"
-                } else {
-                    self.authorizationStatus = "Waiting for homes... (\(attempt)/10)"
-                }
+                // Authorized but no homes yet - still syncing from iCloud
+                self.authorizationStatus = "Syncing HomeKit data..."
             }
 
-            // After all retries, if still not authorized
+            // After 60 seconds, if still no homes
             if !self.isAuthorized {
                 let status = self.homeManager.authorizationStatus
                 if !status.contains(.determined) {
                     self.authorizationStatus = "HomeKit permission not granted"
                 } else {
-                    self.authorizationStatus = "No HomeKit homes found"
+                    self.authorizationStatus = "No HomeKit homes found. Check your Home app."
                 }
             }
         }
@@ -523,36 +530,10 @@ extension HomeKitManager: HMHomeManagerDelegate {
                 isAuthorized = false
                 authorizationStatus = "HomeKit access not authorized"
             } else if manager.homes.isEmpty {
-                // HomeKit may return empty initially while syncing - wait and retry
-                authorizationStatus = "Connecting to HomeKit..."
-
-                // Retry a few times before giving up
-                for attempt in 1...5 {
-                    try? await Task.sleep(for: .seconds(1))
-
-                    // Check if homes were populated by another callback
-                    if !self.homes.isEmpty {
-                        self.isAuthorized = true
-                        self.authorizationStatus = "Connected to \(self.homes.first?.name ?? "Home")"
-                        self.refreshAccessories()
-                        return
-                    }
-
-                    // Re-check the manager directly
-                    if !manager.homes.isEmpty {
-                        self.homes = manager.homes
-                        self.isAuthorized = true
-                        self.authorizationStatus = "Connected to \(manager.homes.first?.name ?? "Home")"
-                        self.refreshAccessories()
-                        return
-                    }
-
-                    self.authorizationStatus = "Connecting to HomeKit... (\(attempt)/5)"
-                }
-
-                // After retries, still no homes
-                isAuthorized = false
-                authorizationStatus = "No HomeKit homes found. Set up a home in the Home app."
+                // HomeKit may call this with empty homes initially while syncing from iCloud
+                // Don't set isAuthorized = false here - let the init() loop handle timeout
+                // The delegate will be called again when homes are populated
+                authorizationStatus = "Syncing HomeKit data..."
             } else {
                 isAuthorized = true
                 authorizationStatus = "Connected to \(manager.homes.first?.name ?? "Home")"
