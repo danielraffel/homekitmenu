@@ -154,17 +154,27 @@ struct MenuBarContentView: View {
                         .padding(.top, 8)
                 }
             } else if !homeKitManager.isAuthorized {
-                // Not authorized state
+                // Not authorized state - check if it's permission or sync issue
+                let needsPermission = homeKitManager.authorizationStatus.contains("permission")
                 ContentUnavailableView {
-                    Label("No HomeKit Access", systemImage: "house.circle")
+                    Label(needsPermission ? "No HomeKit Access" : "Connection Issue", systemImage: "house.circle")
                 } description: {
                     Text(homeKitManager.authorizationStatus)
-                    Text("Open System Settings to grant HomeKit access")
-                } actions: {
-                    Button("Open Privacy Settings") {
-                        openPrivacySettings()
+                    if needsPermission {
+                        Text("Open System Settings to grant HomeKit access")
                     }
-                    .buttonStyle(.borderedProminent)
+                } actions: {
+                    if needsPermission {
+                        Button("Open Privacy Settings") {
+                            openPrivacySettings()
+                        }
+                        .buttonStyle(.borderedProminent)
+                    } else {
+                        Button("Retry") {
+                            homeKitManager.retryConnection()
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
                 }
             } else if homeKitManager.accessories.isEmpty {
                 // No accessories found
