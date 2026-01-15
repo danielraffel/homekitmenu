@@ -33,19 +33,6 @@ struct SettingsView: View {
                             .foregroundStyle(.secondary)
                     }
 
-                    #if targetEnvironment(macCatalyst)
-                    Button {
-                        SparkleUpdateManager.shared.checkForUpdates()
-                    } label: {
-                        HStack {
-                            Text("Check for Updates")
-                            Spacer()
-                            Image(systemName: "arrow.down.circle")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .foregroundStyle(.primary)
-                    #endif
                 }
 
                 Section("Legal") {
@@ -78,21 +65,6 @@ struct SettingsView: View {
                         }
                     }
                     .foregroundStyle(.primary)
-                }
-
-                Section {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Sparkle")
-                            .font(.headline)
-                        Text("Update framework for macOS applications")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Link("github.com/sparkle-project/Sparkle", destination: URL(string: "https://github.com/sparkle-project/Sparkle")!)
-                            .font(.caption)
-                    }
-                    .padding(.vertical, 4)
-                } header: {
-                    Text("Third-Party Software")
                 }
 
                 Section {

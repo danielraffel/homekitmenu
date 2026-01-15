@@ -21,7 +21,6 @@
 		1A0000010000000000000015 /* MenuItemsSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000020000000000000015 /* MenuItemsSelectionView.swift */; };
 		1A0000010000000000000016 /* ShortcutsSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000020000000000000016 /* ShortcutsSelectionView.swift */; };
 		1A0000010000000000000017 /* AppleShortcutsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000020000000000000017 /* AppleShortcutsManager.swift */; };
-		1A0000010000000000000018 /* SparkleUpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000020000000000000018 /* SparkleUpdateManager.swift */; };
 		1A0000010000000000000019 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000020000000000000019 /* Assets.xcassets */; };
 		1A0000010000000000000020 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000020000000000000020 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
@@ -44,7 +43,6 @@
 		1A0000020000000000000015 /* MenuItemsSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemsSelectionView.swift; sourceTree = "<group>"; };
 		1A0000020000000000000016 /* ShortcutsSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsSelectionView.swift; sourceTree = "<group>"; };
 		1A0000020000000000000017 /* AppleShortcutsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleShortcutsManager.swift; sourceTree = "<group>"; };
-		1A0000020000000000000018 /* SparkleUpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparkleUpdateManager.swift; sourceTree = "<group>"; };
 		1A0000020000000000000019 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1A0000020000000000000020 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -133,7 +131,6 @@
 				1A0000020000000000000011 /* KeyboardShortcutManager.swift */,
 				1A0000020000000000000013 /* AutomationManager.swift */,
 				1A0000020000000000000017 /* AppleShortcutsManager.swift */,
-				1A0000020000000000000018 /* SparkleUpdateManager.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -217,7 +214,6 @@
 				1A0000010000000000000015 /* MenuItemsSelectionView.swift in Sources */,
 				1A0000010000000000000016 /* ShortcutsSelectionView.swift in Sources */,
 				1A0000010000000000000017 /* AppleShortcutsManager.swift in Sources */,
-				1A0000010000000000000018 /* SparkleUpdateManager.swift in Sources */,
 				1A0000010000000000000020 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -364,7 +360,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.danielraffel.HomeKitMenu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -398,7 +394,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.danielraffel.HomeKitMenu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

@@ -3,16 +3,12 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.12</string>
+	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
-	<string>10012</string>
+	<string>1</string>
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSHomeKitUsageDescription</key>
 	<string>HomeKit Menu needs access to your HomeKit accessories to display and control them from the menu bar.</string>
-	<key>SUFeedURL</key>
-	<string>https://www.generouscorp.com/homekitmenu-releases/appcast/release.xml</string>
-	<key>SUPublicEDKey</key>
-	<string>A/1JcspAs19gjff6/VQabIVYG5UQgHa/bvXCKqzxI9U=</string>
 </dict>
 </plist>

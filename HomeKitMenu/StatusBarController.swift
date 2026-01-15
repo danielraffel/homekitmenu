@@ -452,14 +452,6 @@ final class StatusBarController: NSObject, ObservableObject {
             }
         }
 
-        // Add separator
-        addSeparator(to: menu)
-
-        // Add Check for Updates item
-        addMenuItem(to: menu, title: "Check for Updates...", enabled: SparkleUpdateManager.shared.canCheckForUpdates, iconName: nil) {
-            SparkleUpdateManager.shared.checkForUpdates()
-        }
-
         // Add Quit item
         addMenuItem(to: menu, title: "Quit", enabled: true, iconName: nil) {
             exit(0)
