@@ -5,7 +5,7 @@ struct SettingsView: View {
     @Bindable var preferences: UserPreferences
     @Environment(\.dismiss) private var dismiss
 
-    private let baseURL = "https://www.generouscorp.com/homekitmenu-releases/"
+    private let baseURL = "https://danielraffel.github.io/homekitmenu/"
 
     var body: some View {
         NavigationStack {
@@ -68,7 +68,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Text("HomeKit is a registered trademark of Apple Inc.")
+                    Text("HomeKit® is a registered trademark of Apple Inc. This app is not affiliated with, endorsed by, or sponsored by Apple Inc.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
