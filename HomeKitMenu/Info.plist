@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.4</string>
+	<key>CFBundleVersion</key>
+	<string>10004</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSHomeKitUsageDescription</key>
+	<string>HomeKit Menu needs access to your HomeKit accessories to display and control them from the menu bar.</string>
+	<key>SUFeedURL</key>
+	<string>https://www.generouscorp.com/homekitmenu-releases/appcast/release.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>A/1JcspAs19gjff6/VQabIVYG5UQgHa/bvXCKqzxI9U=</string>
+</dict>
+</plist>

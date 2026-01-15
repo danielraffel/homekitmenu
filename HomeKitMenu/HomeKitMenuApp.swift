@@ -1,0 +1,284 @@
+import SwiftUI
+import HomeKit
+
+@main
+struct HomeKitMenuApp: App {
+    @State private var homeKitManager = HomeKitManager()
+    @State private var preferences = UserPreferences()
+    @State private var statusBarSetup = false
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView(
+                homeKitManager: homeKitManager,
+                preferences: preferences
+            )
+            .task {
+                // Setup status bar, keyboard shortcuts, and automations after a brief delay
+                if !statusBarSetup {
+                    statusBarSetup = true
+                    try? await Task.sleep(for: .milliseconds(500))
+                    StatusBarController.shared.setup(
+                        homeKitManager: homeKitManager,
+                        preferences: preferences
+                    )
+                    KeyboardShortcutManager.shared.setup(homeKitManager: homeKitManager)
+                    AutomationManager.shared.setup(homeKitManager: homeKitManager)
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                StatusBarController.shared.updateMenu()
+            }
+        }
+        #if targetEnvironment(macCatalyst)
+        .defaultSize(width: 400, height: 600)
+        #endif
+    }
+}
+
+/// Main content view that shows either menu bar dropdown or preferences
+struct ContentView: View {
+    let homeKitManager: HomeKitManager
+    let preferences: UserPreferences
+    @State private var showingPreferences = false
+    @State private var showingShortcuts = false
+    @State private var showingAutomations = false
+    @State private var showingMenuItems = false
+    @State private var showingAppleShortcuts = false
+
+    var body: some View {
+        NavigationStack {
+            MenuBarContentView(
+                homeKitManager: homeKitManager,
+                preferences: preferences,
+                showingPreferences: $showingPreferences
+            )
+            .navigationTitle("HomeKit Menu")
+            #if targetEnvironment(macCatalyst)
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Button {
+                            showingPreferences = true
+                        } label: {
+                            Label("Select Devices", systemImage: "checklist")
+                        }
+
+                        Button {
+                            showingMenuItems = true
+                        } label: {
+                            Label("Sensors & Scenes", systemImage: "list.bullet")
+                        }
+
+                        Divider()
+
+                        Button {
+                            showingShortcuts = true
+                        } label: {
+                            Label("Keyboard Shortcuts", systemImage: "keyboard")
+                        }
+
+                        Button {
+                            showingAutomations = true
+                        } label: {
+                            Label("Automations", systemImage: "bolt.fill")
+                        }
+
+                        Button {
+                            showingAppleShortcuts = true
+                        } label: {
+                            Label("Apple Shortcuts", systemImage: "bolt.square.fill")
+                        }
+                    } label: {
+                        Image(systemName: "gear")
+                    }
+                }
+            }
+            #endif
+        }
+        .sheet(isPresented: $showingPreferences) {
+            PreferencesView(
+                homeKitManager: homeKitManager,
+                preferences: preferences
+            )
+        }
+        .sheet(isPresented: $showingShortcuts) {
+            ShortcutsView(
+                homeKitManager: homeKitManager,
+                preferences: preferences
+            )
+        }
+        .sheet(isPresented: $showingAutomations) {
+            AutomationsView(homeKitManager: homeKitManager)
+        }
+        .sheet(isPresented: $showingMenuItems) {
+            MenuItemsSelectionView(
+                homeKitManager: homeKitManager,
+                preferences: preferences
+            )
+        }
+        .sheet(isPresented: $showingAppleShortcuts) {
+            ShortcutsSelectionView(preferences: preferences)
+        }
+    }
+}
+
+/// The main content showing accessories
+struct MenuBarContentView: View {
+    let homeKitManager: HomeKitManager
+    @Bindable var preferences: UserPreferences
+    @Binding var showingPreferences: Bool
+
+    private var filteredAccessories: [HomeAccessory] {
+        var result = homeKitManager.accessories.filter { preferences.isSelected($0) }
+        if preferences.showOnlyOn {
+            result = result.filter { $0.isOn }
+        }
+        return result
+    }
+
+    private var onCount: Int {
+        filteredAccessories.filter { $0.isOn }.count
+    }
+
+    var body: some View {
+        Group {
+            if !homeKitManager.isAuthorized {
+                // Not authorized state
+                ContentUnavailableView {
+                    Label("No HomeKit Access", systemImage: "house.circle")
+                } description: {
+                    Text(homeKitManager.authorizationStatus)
+                    Text("Open System Settings to grant HomeKit access")
+                } actions: {
+                    Button("Open Privacy Settings") {
+                        openPrivacySettings()
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            } else if homeKitManager.accessories.isEmpty {
+                // No accessories found
+                ContentUnavailableView {
+                    Label("No Devices", systemImage: "lightbulb.slash")
+                } description: {
+                    Text("No HomeKit devices found")
+                } actions: {
+                    Button("Refresh") {
+                        homeKitManager.refreshAccessories()
+                    }
+                }
+            } else if filteredAccessories.isEmpty {
+                // No accessories selected or visible
+                ContentUnavailableView {
+                    Label(preferences.showOnlyOn ? "No Devices On" : "No Devices Selected",
+                          systemImage: preferences.showOnlyOn ? "lightbulb.slash" : "checklist.unchecked")
+                } description: {
+                    Text(preferences.showOnlyOn ? "No devices are currently on" : "Tap the gear icon to select devices to show")
+                } actions: {
+                    if preferences.showOnlyOn {
+                        Button("Show All") {
+                            preferences.showOnlyOn = false
+                        }
+                    } else {
+                        Button("Select Devices") {
+                            showingPreferences = true
+                        }
+                    }
+                }
+            } else {
+                // Accessories list
+                List {
+                    Section {
+                        ForEach(filteredAccessories) { accessory in
+                            AccessoryRow(
+                                accessory: accessory,
+                                customIcon: preferences.customIcon(for: accessory)
+                            ) {
+                                Task {
+                                    await homeKitManager.toggleAccessory(accessory)
+                                }
+                            }
+                        }
+                    } header: {
+                        HStack {
+                            Text("Devices")
+                            Spacer()
+                            if onCount > 0 {
+                                Text("\(onCount) on")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+
+                    // Show selected shortcuts preview if enabled (matches menu bar limit of 15)
+                    if preferences.showAppleShortcuts {
+                        let allShortcuts = AppleShortcutsManager.shared.allShortcuts
+                        let selectedShortcuts = allShortcuts.filter { preferences.isShortcutSelected($0) }
+                        let menuBarLimit = 15
+                        let shortcutsInMenu = Array(selectedShortcuts.sorted().prefix(menuBarLimit))
+
+                        Section {
+                            if selectedShortcuts.isEmpty {
+                                Text("No shortcuts selected")
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                ForEach(shortcutsInMenu, id: \.self) { shortcut in
+                                    HStack(spacing: 12) {
+                                        Image(systemName: "bolt.fill")
+                                            .foregroundStyle(.orange)
+                                        Text(shortcut)
+                                    }
+                                }
+                            }
+                        } header: {
+                            HStack {
+                                Text("Shortcuts in Menu")
+                                Spacer()
+                                if selectedShortcuts.count > menuBarLimit {
+                                    Text("\(menuBarLimit) of \(selectedShortcuts.count)")
+                                        .foregroundStyle(.secondary)
+                                } else {
+                                    Text("\(shortcutsInMenu.count)")
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        } footer: {
+                            if selectedShortcuts.count > menuBarLimit {
+                                Text("Menu bar limited to \(menuBarLimit) shortcuts. \(selectedShortcuts.count - menuBarLimit) not shown.")
+                                    .font(.caption)
+                            }
+                        }
+                    }
+
+                    Section("Display Options") {
+                        Toggle("Group by room in menu", isOn: $preferences.groupByRoom)
+                        Toggle("Sort \"on\" devices first", isOn: $preferences.sortByOnState)
+                        Toggle("Show sensors in menu", isOn: $preferences.showSensorsInMenu)
+                        Toggle("Show scenes in menu", isOn: $preferences.showScenesInMenu)
+                        Toggle("Show Apple Shortcuts in menu", isOn: $preferences.showAppleShortcuts)
+                    }
+
+                    Section {
+                        Button {
+                            homeKitManager.refreshAccessories()
+                        } label: {
+                            Label("Refresh", systemImage: "arrow.clockwise")
+                        }
+                    }
+                }
+            }
+        }
+        .onAppear {
+            homeKitManager.refreshAccessories()
+        }
+    }
+
+    private func openPrivacySettings() {
+        #if targetEnvironment(macCatalyst)
+        // Open System Settings to Privacy & Security > HomeKit
+        if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_HomeKit") {
+            UIApplication.shared.open(url)
+        }
+        #endif
+    }
+}
