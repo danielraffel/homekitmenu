@@ -10,6 +10,10 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section("Startup") {
+                    Toggle("Launch at login", isOn: $preferences.launchAtLogin)
+                }
+
                 Section("Display Options") {
                     Toggle("Group by room in menu", isOn: $preferences.groupByRoom)
                     Toggle("Sort \"on\" devices first", isOn: $preferences.sortByOnState)

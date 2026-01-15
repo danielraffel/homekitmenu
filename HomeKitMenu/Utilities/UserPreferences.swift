@@ -1,10 +1,12 @@
 import Foundation
 import SwiftUI
+import ServiceManagement
 
 /// Manages user preferences for which accessories to show in the menu bar
 @Observable
 final class UserPreferences {
     private let selectedAccessoriesKey = "selectedAccessories"
+    private let launchAtLoginKey = "launchAtLogin"
     private let showOnlyOnKey = "showOnlyOn"
     private let customIconsKey = "customIcons"
     private let pinnedSensorsKey = "pinnedSensors"
@@ -103,6 +105,14 @@ final class UserPreferences {
         }
     }
 
+    /// Whether to launch the app at login
+    var launchAtLogin: Bool {
+        didSet {
+            UserDefaults.standard.set(launchAtLogin, forKey: launchAtLoginKey)
+            updateLaunchAtLogin()
+        }
+    }
+
     /// UUIDs of sensors selected to show in menu (nil = show all)
     var selectedSensorIDs: Set<UUID>? {
         didSet {
@@ -127,6 +137,7 @@ final class UserPreferences {
         groupByRoom = UserDefaults.standard.object(forKey: groupByRoomKey) as? Bool ?? true
         sortByOnState = UserDefaults.standard.object(forKey: sortByOnStateKey) as? Bool ?? false
         showAppleShortcuts = UserDefaults.standard.object(forKey: showAppleShortcutsKey) as? Bool ?? false
+        launchAtLogin = UserDefaults.standard.bool(forKey: launchAtLoginKey)
 
         // Load selected accessories
         if let data = UserDefaults.standard.data(forKey: selectedAccessoriesKey),
@@ -384,6 +395,20 @@ final class UserPreferences {
     private func saveExpandedFolders() {
         if let data = try? JSONEncoder().encode(Array(expandedFolders)) {
             UserDefaults.standard.set(data, forKey: expandedFoldersKey)
+        }
+    }
+
+    // MARK: - Launch at Login
+
+    private func updateLaunchAtLogin() {
+        do {
+            if launchAtLogin {
+                try SMAppService.mainApp.register()
+            } else {
+                try SMAppService.mainApp.unregister()
+            }
+        } catch {
+            print("Failed to update launch at login: \(error)")
         }
     }
 }
