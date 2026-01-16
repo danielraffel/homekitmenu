@@ -34,7 +34,7 @@
 		1A0000020000000000000007 /* HomeKitMenu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HomeKitMenu.entitlements; sourceTree = "<group>"; };
 		1A0000020000000000000008 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A0000020000000000000009 /* StatusBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarController.swift; sourceTree = "<group>"; };
-		1A0000030000000000000001 /* HomeBar Menu Bar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomeBar Menu Bar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A0000030000000000000001 /* HomeBar Menu Bar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HomeBar Menu Bar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A0000020000000000000010 /* HomeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HomeKit.framework; path = System/Library/Frameworks/HomeKit.framework; sourceTree = SDKROOT; };
 		1A0000020000000000000011 /* KeyboardShortcutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutManager.swift; sourceTree = "<group>"; };
 		1A0000020000000000000012 /* ShortcutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsView.swift; sourceTree = "<group>"; };
@@ -158,8 +158,8 @@
 			);
 			dependencies = (
 			);
-			name = HomeBar Menu Bar;
-			productName = HomeBar Menu Bar;
+			name = "HomeBar Menu Bar";
+			productName = "HomeBar Menu Bar";
 			productReference = 1A0000030000000000000001 /* HomeBar Menu Bar.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -361,7 +361,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.danielraffel.HomeBar Menu Bar;
+				PRODUCT_BUNDLE_IDENTIFIER = com.danielraffel.HomeBarMenuBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = YES;
@@ -395,7 +395,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.danielraffel.HomeBar Menu Bar;
+				PRODUCT_BUNDLE_IDENTIFIER = com.danielraffel.HomeBarMenuBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = YES;
