@@ -131,9 +131,9 @@ final class UserPreferences {
         // Load show only on preference
         showOnlyOn = UserDefaults.standard.bool(forKey: showOnlyOnKey)
 
-        // Load visibility preferences (default to true)
-        showSensorsInMenu = UserDefaults.standard.object(forKey: showSensorsInMenuKey) as? Bool ?? true
-        showScenesInMenu = UserDefaults.standard.object(forKey: showScenesInMenuKey) as? Bool ?? true
+        // Load visibility preferences (default to false)
+        showSensorsInMenu = UserDefaults.standard.object(forKey: showSensorsInMenuKey) as? Bool ?? false
+        showScenesInMenu = UserDefaults.standard.object(forKey: showScenesInMenuKey) as? Bool ?? false
         groupByRoom = UserDefaults.standard.object(forKey: groupByRoomKey) as? Bool ?? true
         sortByOnState = UserDefaults.standard.object(forKey: sortByOnStateKey) as? Bool ?? false
         showAppleShortcuts = UserDefaults.standard.object(forKey: showAppleShortcutsKey) as? Bool ?? false

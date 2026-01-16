@@ -78,32 +78,62 @@ struct PreferencesView: View {
                         Text("No matching devices found")
                     }
                 } else {
-                    List {
-                        ForEach(groupedAccessories, id: \.0) { roomName, accessories in
-                            Section {
-                                ForEach(accessories) { accessory in
-                                    AccessorySelectionRow(
-                                        accessory: accessory,
-                                        isSelected: preferences.isSelected(accessory),
-                                        customIcon: preferences.customIcon(for: accessory),
-                                        onToggle: {
-                                            preferences.toggleSelection(accessory)
-                                        },
-                                        onIconChange: { icon in
-                                            preferences.setCustomIcon(icon, for: accessory)
-                                        }
-                                    )
-                                }
-                            } header: {
+                    VStack(spacing: 0) {
+                        // Select All/None buttons at the top
+                        HStack(spacing: 12) {
+                            Button {
+                                preferences.selectAll(homeKitManager.accessories)
+                            } label: {
                                 HStack {
-                                    Text(roomName)
-                                    Spacer()
-                                    Button {
-                                        toggleRoom(accessories)
-                                    } label: {
-                                        Text(isRoomFullySelected(accessories) ? "Deselect All" : "Select All")
-                                            .font(.caption)
-                                            .textCase(.none)
+                                    Image(systemName: "checkmark.circle.fill")
+                                    Text("Select All")
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.bordered)
+
+                            Button {
+                                preferences.deselectAll()
+                            } label: {
+                                HStack {
+                                    Image(systemName: "circle")
+                                    Text("Select None")
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 12)
+                        .background(Color(uiColor: .systemGroupedBackground))
+
+                        List {
+                            ForEach(groupedAccessories, id: \.0) { roomName, accessories in
+                                Section {
+                                    ForEach(accessories) { accessory in
+                                        AccessorySelectionRow(
+                                            accessory: accessory,
+                                            isSelected: preferences.isSelected(accessory),
+                                            customIcon: preferences.customIcon(for: accessory),
+                                            onToggle: {
+                                                preferences.toggleSelection(accessory)
+                                            },
+                                            onIconChange: { icon in
+                                                preferences.setCustomIcon(icon, for: accessory)
+                                            }
+                                        )
+                                    }
+                                } header: {
+                                    HStack {
+                                        Text(roomName)
+                                        Spacer()
+                                        Button {
+                                            toggleRoom(accessories)
+                                        } label: {
+                                            Text(isRoomFullySelected(accessories) ? "Deselect All" : "Select All")
+                                                .font(.caption)
+                                                .textCase(.none)
+                                        }
                                     }
                                 }
                             }
@@ -117,16 +147,10 @@ struct PreferencesView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Menu {
-                        Button("Select All") {
-                            preferences.selectAll(homeKitManager.accessories)
-                        }
-                        Button("Select None") {
-                            preferences.deselectAll()
-                        }
-                        Divider()
                         Button("All Types") {
                             filterType = nil
                         }
+                        Divider()
                         ForEach(HomeAccessory.AccessoryType.allCases.filter { $0 != .unknown }, id: \.self) { type in
                             Button {
                                 filterType = type
@@ -138,7 +162,7 @@ struct PreferencesView: View {
                         HStack(spacing: 4) {
                             Text("\(selectedCount)")
                                 .font(.caption)
-                            Image(systemName: "ellipsis.circle")
+                            Image(systemName: "line.3.horizontal.decrease.circle")
                         }
                     }
                 }

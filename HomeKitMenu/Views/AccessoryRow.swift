@@ -7,7 +7,7 @@ struct AccessoryRow: View {
     let onToggle: () -> Void
 
     private var effectiveIcon: String {
-        customIcon ?? accessory.type.icon
+        customIcon ?? accessory.smartIcon ?? accessory.type.icon
     }
 
     var body: some View {
@@ -53,7 +53,11 @@ struct AccessorySelectionRow: View {
     @State private var showingIconPicker = false
 
     private var effectiveIcon: String {
-        customIcon ?? accessory.type.icon
+        customIcon ?? accessory.smartIcon ?? accessory.type.icon
+    }
+
+    private var defaultIcon: String {
+        accessory.smartIcon ?? accessory.type.icon
     }
 
     var body: some View {
@@ -103,7 +107,7 @@ struct AccessorySelectionRow: View {
                 accessoryName: accessory.name,
                 currentIcon: effectiveIcon,
                 onSelect: { icon in
-                    onIconChange(icon == accessory.type.icon ? nil : icon)
+                    onIconChange(icon == defaultIcon ? nil : icon)
                     showingIconPicker = false
                 }
             )

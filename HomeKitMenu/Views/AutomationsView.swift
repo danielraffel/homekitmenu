@@ -45,7 +45,7 @@ struct AutomationsView: View {
                 }
 
                 Section {
-                    Text("Automations run when triggers occur while HomeKit Menu is running. Keep the app open in the menu bar for automations to work.")
+                    Text("Automations run when triggers occur while Homebar is running. Keep the app open in the menu bar for automations to work.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

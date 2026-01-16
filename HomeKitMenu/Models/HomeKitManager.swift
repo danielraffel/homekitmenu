@@ -106,31 +106,163 @@ struct HomeAccessory: Identifiable, Hashable {
         static var availableIcons: [(icon: String, label: String)] {
             [
                 ("lightbulb.fill", "Light"),
-                ("powerplug.fill", "Switch/Outlet"),
+                ("lamp.table.fill", "Table Lamp"),
+                ("lamp.floor.fill", "Floor Lamp"),
+                ("lamp.desk.fill", "Desk Lamp"),
+                ("chandelier.fill", "Chandelier"),
+                ("powerplug.fill", "Switch"),
+                ("poweroutlet.type.b.fill", "Outlet"),
                 ("fan.fill", "Fan"),
+                ("fan.ceiling.fill", "Ceiling Fan"),
+                ("fan.desk.fill", "Desk Fan"),
+                ("fan.floor.fill", "Floor Fan"),
                 ("thermometer.medium", "Thermostat"),
                 ("door.left.hand.closed", "Door"),
                 ("window.vertical.closed", "Window"),
                 ("lock.fill", "Lock"),
-                ("bell.badge.fill", "Alarm"),
+                ("bell.badge.fill", "Alarm/Doorbell"),
                 ("figure.walk.motion", "Motion"),
                 ("smoke.fill", "Smoke"),
                 ("flame.fill", "Heat"),
                 ("exclamationmark.shield.fill", "Tamper"),
                 ("sensor.fill", "Sensor"),
-                ("camera.fill", "Camera"),
-                ("speaker.wave.2.fill", "Speaker"),
+                ("video.fill", "Camera"),
+                ("hifispeaker.fill", "Speaker"),
                 ("tv.fill", "TV"),
                 ("blinds.vertical.closed", "Blinds"),
                 ("garage.closed", "Garage"),
-                ("spigot.fill", "Sprinkler"),
+                ("sprinkler.fill", "Sprinkler"),
                 ("bolt.fill", "Power"),
+                ("robotic.vacuum.fill", "Vacuum"),
+                ("bonjour", "Bridge/Hub"),
+                ("air.purifier.fill", "Air Purifier"),
+                ("heater.vertical.fill", "Heater"),
+                ("humidifier.fill", "Humidifier"),
+                ("dehumidifier.fill", "Dehumidifier"),
+                ("air.conditioner.horizontal.fill", "Air Conditioner"),
             ]
         }
     }
 
+    /// Smart icon detection based on device name
+    var smartIcon: String? {
+        let nameLower = name.lowercased()
+
+        // Vacuum cleaners
+        if nameLower.contains("vacuum") || nameLower.contains("roomba") ||
+           nameLower.contains("braava") || nameLower.contains("brava jet") {
+            return "robotic.vacuum.fill"
+        }
+
+        // Bridges and hubs
+        if nameLower.contains("bridge") || nameLower.contains("ademco") ||
+           nameLower.contains("home hub") {
+            return "bonjour"
+        }
+
+        // Cameras
+        if nameLower.contains("camera") || nameLower.contains("cam") {
+            return "video.fill"
+        }
+
+        // Speakers and audio
+        if nameLower.contains("speaker") || nameLower.contains("homepod") ||
+           nameLower.contains("sonos") || nameLower.contains("audio") {
+            return "hifispeaker.fill"
+        }
+
+        // TV and displays
+        if nameLower.contains("tv") || nameLower.contains("television") ||
+           nameLower.contains("apple tv") {
+            return "tv.fill"
+        }
+
+        // Garage doors and openers
+        if nameLower.contains("garage") && !nameLower.contains("light") {
+            return "garage.closed"
+        }
+
+        // Blinds and shades
+        if nameLower.contains("blind") || nameLower.contains("shade") ||
+           nameLower.contains("curtain") {
+            return "blinds.vertical.closed"
+        }
+
+        // Sprinklers and irrigation
+        if nameLower.contains("sprinkler") || nameLower.contains("irrigation") ||
+           nameLower.contains("water") {
+            return "sprinkler.fill"
+        }
+
+        // Air purifier / Air quality
+        if nameLower.contains("purifier") || nameLower.contains("air quality") {
+            return "air.purifier.fill"
+        }
+
+        // Heater
+        if nameLower.contains("heater") || nameLower.contains("radiator") {
+            return "heater.vertical.fill"
+        }
+
+        // Humidifier/Dehumidifier
+        if nameLower.contains("humidifier") {
+            return "humidifier.fill"
+        }
+        if nameLower.contains("dehumidifier") {
+            return "dehumidifier.fill"
+        }
+
+        // Outlets and plugs
+        if nameLower.contains("outlet") || nameLower.contains("plug") {
+            return "poweroutlet.type.b.fill"
+        }
+
+        // Lamps specifically
+        if nameLower.contains("lamp") {
+            return "lamp.table.fill"
+        }
+
+        // Floor lamp
+        if nameLower.contains("floor lamp") {
+            return "lamp.floor.fill"
+        }
+
+        // Chandelier or ceiling
+        if nameLower.contains("chandelier") || nameLower.contains("ceiling") {
+            return "chandelier.fill"
+        }
+
+        // Desk
+        if nameLower.contains("desk lamp") || nameLower.contains("desk light") {
+            return "lamp.desk.fill"
+        }
+
+        // Fan types
+        if nameLower.contains("ceiling fan") {
+            return "fan.ceiling.fill"
+        }
+        if nameLower.contains("desk fan") {
+            return "fan.desk.fill"
+        }
+        if nameLower.contains("floor fan") {
+            return "fan.floor.fill"
+        }
+
+        // Doorbell
+        if nameLower.contains("doorbell") || nameLower.contains("chime") {
+            return "bell.badge.fill"
+        }
+
+        // Air conditioner
+        if nameLower.contains("air conditioner") || nameLower.contains("ac unit") {
+            return "air.conditioner.horizontal.fill"
+        }
+
+        return nil
+    }
+
     var effectiveIcon: String {
-        customIcon ?? type.icon
+        customIcon ?? smartIcon ?? type.icon
     }
 
     func hash(into hasher: inout Hasher) {

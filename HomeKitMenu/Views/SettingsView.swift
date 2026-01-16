@@ -19,7 +19,7 @@ struct SettingsView: View {
                     Toggle("Sort \"on\" devices first", isOn: $preferences.sortByOnState)
                     Toggle("Show sensors in menu", isOn: $preferences.showSensorsInMenu)
                     Toggle("Show scenes in menu", isOn: $preferences.showScenesInMenu)
-                    Toggle("Show Apple Shortcuts in menu", isOn: $preferences.showAppleShortcuts)
+                    Toggle("Show Shortcuts in menu", isOn: $preferences.showAppleShortcuts)
                 }
 
                 Section("About") {

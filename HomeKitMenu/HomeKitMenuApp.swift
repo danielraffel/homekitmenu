@@ -53,7 +53,7 @@ struct ContentView: View {
                 preferences: preferences,
                 showingPreferences: $showingPreferences
             )
-            .navigationTitle("HomeKit Menu")
+            .navigationTitle("Homebar")
             #if targetEnvironment(macCatalyst)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
@@ -87,7 +87,7 @@ struct ContentView: View {
                         Button {
                             showingAppleShortcuts = true
                         } label: {
-                            Label("Apple Shortcuts", systemImage: "bolt.square.fill")
+                            Label("Shortcuts", systemImage: "bolt.square.fill")
                         }
                     } label: {
                         Image(systemName: "gear")
@@ -230,19 +230,17 @@ struct MenuBarContentView: View {
                         }
                     }
 
-                    // Show selected shortcuts preview if enabled (matches menu bar limit of 15)
+                    // Show selected shortcuts preview if enabled
                     if preferences.showAppleShortcuts {
                         let allShortcuts = AppleShortcutsManager.shared.allShortcuts
                         let selectedShortcuts = allShortcuts.filter { preferences.isShortcutSelected($0) }
-                        let menuBarLimit = 15
-                        let shortcutsInMenu = Array(selectedShortcuts.sorted().prefix(menuBarLimit))
 
                         Section {
                             if selectedShortcuts.isEmpty {
                                 Text("No shortcuts selected")
                                     .foregroundStyle(.secondary)
                             } else {
-                                ForEach(shortcutsInMenu, id: \.self) { shortcut in
+                                ForEach(selectedShortcuts.sorted(), id: \.self) { shortcut in
                                     HStack(spacing: 12) {
                                         Image(systemName: "bolt.fill")
                                             .foregroundStyle(.orange)
@@ -254,18 +252,8 @@ struct MenuBarContentView: View {
                             HStack {
                                 Text("Shortcuts in Menu")
                                 Spacer()
-                                if selectedShortcuts.count > menuBarLimit {
-                                    Text("\(menuBarLimit) of \(selectedShortcuts.count)")
-                                        .foregroundStyle(.secondary)
-                                } else {
-                                    Text("\(shortcutsInMenu.count)")
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                        } footer: {
-                            if selectedShortcuts.count > menuBarLimit {
-                                Text("Menu bar limited to \(menuBarLimit) shortcuts. \(selectedShortcuts.count - menuBarLimit) not shown.")
-                                    .font(.caption)
+                                Text("\(selectedShortcuts.count)")
+                                    .foregroundStyle(.secondary)
                             }
                         }
                     }

@@ -159,14 +159,16 @@ final class StatusBarController: NSObject, ObservableObject {
             circleColor = (colorClass as AnyObject).perform(NSSelectorFromString("systemBlueColor"))?.takeUnretainedValue()
             iconColor = (colorClass as AnyObject).perform(NSSelectorFromString("whiteColor"))?.takeUnretainedValue()
         } else {
-            // Gray circle, dark icon
+            // Subtle gray circle, medium gray icon (matches macOS menu bar style)
             let graySelector = NSSelectorFromString("colorWithWhite:alpha:")
             let grayInv = (colorClass as AnyObject).method(for: graySelector)
             typealias GrayColorFunc = @convention(c) (AnyObject, Selector, CGFloat, CGFloat) -> AnyObject?
             let grayColorFunc = unsafeBitCast(grayInv, to: GrayColorFunc.self)
-            circleColor = grayColorFunc(colorClass as AnyObject, graySelector, 0.75, 1.0)
+            // Lighter circle background for subtle appearance
+            circleColor = grayColorFunc(colorClass as AnyObject, graySelector, 0.68, 1.0)
 
-            let darkGrayColor = grayColorFunc(colorClass as AnyObject, graySelector, 0.3, 1.0)
+            // Medium gray icon for good contrast without being too dark
+            let darkGrayColor = grayColorFunc(colorClass as AnyObject, graySelector, 0.35, 1.0)
             iconColor = darkGrayColor
         }
 
@@ -288,7 +290,7 @@ final class StatusBarController: NSObject, ObservableObject {
             if !sensorsWithReadings.isEmpty {
                 addMenuItem(to: menu, title: "Sensors", enabled: false, iconName: nil, action: nil)
 
-                for sensor in sensorsWithReadings.prefix(8) {
+                for sensor in sensorsWithReadings {
                     let isPinned = preferences.isPinned(sensor)
                     let readingText = sensor.sensorReadings.map { $0.displayString }.joined(separator: " | ")
                     let pinIndicator = isPinned ? "📌 " : ""
@@ -366,7 +368,7 @@ final class StatusBarController: NSObject, ObservableObject {
                 addSeparator(to: menu)
                 addMenuItem(to: menu, title: "Scenes", enabled: false, iconName: nil, action: nil)
 
-                for scene in scenes.prefix(10) { // Limit to 10 scenes
+                for scene in scenes {
                     let shortcut = KeyboardShortcutManager.shared.shortcut(for: scene.name)
                     let keyEquiv = shortcut?.displayString ?? ""
 
@@ -397,7 +399,7 @@ final class StatusBarController: NSObject, ObservableObject {
                 addSeparator(to: menu)
                 addMenuItem(to: menu, title: "Shortcuts", enabled: false, iconName: nil, action: nil)
 
-                for shortcutName in selectedShortcuts.sorted().prefix(15) { // Limit to 15
+                for shortcutName in selectedShortcuts.sorted() {
                     addMenuItem(
                         to: menu,
                         title: shortcutName,
@@ -420,7 +422,7 @@ final class StatusBarController: NSObject, ObservableObject {
         addSeparator(to: menu)
 
         // Add "Open App" item with Cmd+O shortcut
-        addMenuItem(to: menu, title: "Open HomeKit Menu...", enabled: true, iconName: nil, keyEquivalent: "o") {
+        addMenuItem(to: menu, title: "Open Homebar...", enabled: true, iconName: nil, keyEquivalent: "o") {
             // First activate the app
             if let nsAppClass = NSClassFromString("NSApplication") as? NSObject.Type,
                let sharedApp = nsAppClass.perform(NSSelectorFromString("sharedApplication"))?.takeUnretainedValue() {
@@ -530,8 +532,7 @@ final class StatusBarController: NSObject, ObservableObject {
     }
 
     private func addAccessoryMenuItem(to menu: AnyObject, accessory: HomeAccessory, preferences: UserPreferences, homeKitManager: HomeKitManager) {
-        let customIcon = preferences.customIcon(for: accessory)
-        let iconName = customIcon ?? accessory.type.icon
+        let iconName = preferences.customIcon(for: accessory) ?? accessory.effectiveIcon
 
         // Get keyboard shortcut if assigned
         let shortcut = KeyboardShortcutManager.shared.shortcut(for: accessory.uniqueIdentifier.uuidString)

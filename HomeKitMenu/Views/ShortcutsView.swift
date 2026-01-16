@@ -28,7 +28,7 @@ struct ShortcutsView: View {
                         ForEach(selectedAccessories) { accessory in
                             ShortcutRow(
                                 name: accessory.name,
-                                icon: preferences.customIcon(for: accessory) ?? accessory.type.icon,
+                                icon: preferences.customIcon(for: accessory) ?? accessory.smartIcon ?? accessory.type.icon,
                                 targetID: accessory.uniqueIdentifier.uuidString,
                                 targetType: .accessory,
                                 shortcutManager: shortcutManager

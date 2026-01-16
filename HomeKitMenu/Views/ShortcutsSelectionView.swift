@@ -108,7 +108,7 @@ struct ShortcutsSelectionView: View {
                     }
                 }
             }
-            .navigationTitle("Apple Shortcuts")
+            .navigationTitle("Shortcuts")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -300,7 +300,7 @@ struct ShortcutsSelectionView: View {
     @Bindable var preferences: UserPreferences
 
     var body: some View {
-        Text("Apple Shortcuts not available")
+        Text("Shortcuts not available")
     }
 }
 
