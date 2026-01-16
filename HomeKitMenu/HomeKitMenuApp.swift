@@ -215,6 +215,10 @@ struct MenuBarContentView: View {
                         Button("Select Devices") {
                             showingPreferences = true
                         }
+
+                        Button("Settings") {
+                            showingSettings = true
+                        }
                     }
                 }
             } else {
