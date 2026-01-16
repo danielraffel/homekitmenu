@@ -45,6 +45,7 @@ struct ContentView: View {
     @State private var showingAutomations = false
     @State private var showingMenuItems = false
     @State private var showingAppleShortcuts = false
+    @State private var showingSettings = false
 
     var body: some View {
         NavigationStack {
@@ -89,6 +90,14 @@ struct ContentView: View {
                         } label: {
                             Label("Shortcuts", systemImage: "bolt.square.fill")
                         }
+
+                        Divider()
+
+                        Button {
+                            showingSettings = true
+                        } label: {
+                            Label("App Settings", systemImage: "gear")
+                        }
                     } label: {
                         Image(systemName: "gear")
                     }
@@ -119,6 +128,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingAppleShortcuts) {
             ShortcutsSelectionView(preferences: preferences)
+        }
+        .sheet(isPresented: $showingSettings) {
+            SettingsView(preferences: preferences)
         }
     }
 }
