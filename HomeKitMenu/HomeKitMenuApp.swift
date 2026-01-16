@@ -53,7 +53,7 @@ struct ContentView: View {
                 preferences: preferences,
                 showingPreferences: $showingPreferences
             )
-            .navigationTitle("Homebar")
+            .navigationTitle("HomeBar Menu Bar")
             #if targetEnvironment(macCatalyst)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {

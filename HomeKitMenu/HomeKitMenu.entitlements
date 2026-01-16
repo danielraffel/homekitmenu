@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
     <key>application-identifier</key>
-    <string>95CX6P84C4.com.danielraffel.Homebar</string>
+    <string>95CX6P84C4.com.danielraffel.HomeBarMenuBar</string>
     <key>com.apple.application-identifier</key>
-    <string>95CX6P84C4.com.danielraffel.Homebar</string>
+    <string>95CX6P84C4.com.danielraffel.HomeBarMenuBar</string>
     <key>com.apple.developer.homekit</key>
     <true/>
     <key>com.apple.developer.team-identifier</key>

@@ -9,6 +9,6 @@
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSHomeKitUsageDescription</key>
-	<string>Homebar needs access to your HomeKit accessories to display and control them from the menu bar.</string>
+	<string>HomeBar Menu Bar needs access to your HomeKit accessories to display and control them from the menu bar.</string>
 </dict>
 </plist>

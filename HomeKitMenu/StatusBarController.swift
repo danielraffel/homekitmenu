@@ -422,7 +422,7 @@ final class StatusBarController: NSObject, ObservableObject {
         addSeparator(to: menu)
 
         // Add "Open App" item with Cmd+O shortcut
-        addMenuItem(to: menu, title: "Open Homebar...", enabled: true, iconName: nil, keyEquivalent: "o") {
+        addMenuItem(to: menu, title: "Open HomeBar Menu Bar...", enabled: true, iconName: nil, keyEquivalent: "o") {
             // First activate the app
             if let nsAppClass = NSClassFromString("NSApplication") as? NSObject.Type,
                let sharedApp = nsAppClass.perform(NSSelectorFromString("sharedApplication"))?.takeUnretainedValue() {

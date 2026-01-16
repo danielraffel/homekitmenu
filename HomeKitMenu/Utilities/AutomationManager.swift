@@ -24,7 +24,7 @@ enum AutomationTrigger: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .screenUnlock: return "When your Mac wakes or is unlocked"
         case .screenLock: return "When your Mac sleeps or is locked"
-        case .appLaunch: return "When Homebar is launched"
+        case .appLaunch: return "When HomeBar Menu Bar is launched"
         }
     }
 }

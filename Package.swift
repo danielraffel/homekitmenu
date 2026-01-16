@@ -2,13 +2,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "Homebar",
+    name: "HomeBarMenuBar",
     platforms: [
         .macOS(.v14)
     ],
     targets: [
         .executableTarget(
-            name: "Homebar",
+            name: "HomeBarMenuBar",
             path: "HomeKitMenu"
         )
     ]
