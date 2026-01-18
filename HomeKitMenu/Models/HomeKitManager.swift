@@ -60,7 +60,7 @@ struct HomeAccessory: Identifiable, Hashable {
     var id: UUID { uniqueIdentifier }
     let uniqueIdentifier: UUID
     let name: String
-    let roomName: String?
+    var roomName: String?
     let type: AccessoryType
     var isOn: Bool
     var isReachable: Bool
@@ -393,6 +393,7 @@ final class HomeKitManager: NSObject {
     deinit {
         homeManager.delegate = nil
         clearAccessoryDelegates()
+        currentHome?.delegate = nil
     }
 
     private func clearAccessoryDelegates() {
@@ -417,6 +418,9 @@ final class HomeKitManager: NSObject {
             accessories = []
             return
         }
+
+        // Set up home delegate to receive room change notifications
+        home.delegate = self
 
         // First, request fresh reads for all power state characteristics
         for accessory in home.accessories where accessory.isReachable {
@@ -717,6 +721,40 @@ extension HomeKitManager: HMHomeManagerDelegate {
     func homeManagerDidUpdatePrimaryHome(_ manager: HMHomeManager) {
         Task { @MainActor in
             refreshAccessories()
+        }
+    }
+}
+
+// MARK: - HMHomeDelegate
+extension HomeKitManager: HMHomeDelegate {
+    func home(_ home: HMHome, didUpdateRoom room: HMRoom, for accessory: HMAccessory) {
+        Task { @MainActor in
+            // Update the specific accessory's room name
+            if let index = accessories.firstIndex(where: { $0.uniqueIdentifier == accessory.uniqueIdentifier }) {
+                let newRoomName = accessory.room?.name
+                // Only update if the room actually changed
+                if accessories[index].roomName != newRoomName {
+                    accessories[index].roomName = newRoomName
+                    NotificationCenter.default.post(name: .homeKitAccessoriesDidUpdate, object: nil)
+                }
+            }
+        }
+    }
+
+    func home(_ home: HMHome, didAdd accessory: HMAccessory, to room: HMRoom) {
+        Task { @MainActor in
+            // Refresh accessories to include the newly added accessory
+            refreshAccessories()
+        }
+    }
+
+    func home(_ home: HMHome, didRemove accessory: HMAccessory, from room: HMRoom) {
+        Task { @MainActor in
+            // Update the accessory's room (it might still be in home but not in any room)
+            if let index = accessories.firstIndex(where: { $0.uniqueIdentifier == accessory.uniqueIdentifier }) {
+                accessories[index].roomName = accessory.room?.name
+                NotificationCenter.default.post(name: .homeKitAccessoriesDidUpdate, object: nil)
+            }
         }
     }
 }
