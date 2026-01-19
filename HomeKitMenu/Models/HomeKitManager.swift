@@ -410,6 +410,26 @@ final class HomeKitManager: NSObject {
         }
     }
 
+    /// Updates room names for existing accessories (lightweight)
+    func updateRoomNames() {
+        guard let home = currentHome else { return }
+
+        var updated = false
+        for (index, accessory) in accessories.enumerated() {
+            if let hmAccessory = home.accessories.first(where: { $0.uniqueIdentifier == accessory.uniqueIdentifier }) {
+                let newRoomName = hmAccessory.room?.name
+                if accessories[index].roomName != newRoomName {
+                    accessories[index].roomName = newRoomName
+                    updated = true
+                }
+            }
+        }
+
+        if updated {
+            NotificationCenter.default.post(name: .homeKitAccessoriesDidUpdate, object: nil)
+        }
+    }
+
     /// Refreshes the list of accessories from HomeKit
     func refreshAccessories() {
         clearAccessoryDelegates()

@@ -579,6 +579,12 @@ final class StatusBarController: NSObject, ObservableObject {
         // Always return true to enable items
         return true
     }
+
+    @objc func menuNeedsUpdate(_ menu: AnyObject) {
+        // Update room names from HomeKit before opening the menu
+        // This ensures we show current room locations even if delegate callbacks weren't received
+        homeKitManager?.updateRoomNames()
+    }
 }
 
 #else
