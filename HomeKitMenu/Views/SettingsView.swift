@@ -5,7 +5,7 @@ struct SettingsView: View {
     @Bindable var preferences: UserPreferences
     @Environment(\.dismiss) private var dismiss
 
-    private let baseURL = "https://danielraffel.github.io/homekitmenu/"
+    private let baseURL = "https://danielraffel.github.io/homebar/"
 
     var body: some View {
         NavigationStack {
